@@ -170,7 +170,7 @@ if __name__ == "__main__":
     for line in f:
         nlines = nlines + 1
         if t < time.time():
-            t = time.time()
+            t = time.time() + 0.2
             sys.stdout.write("{nlines:,}\r".format(nlines = nlines))
             sys.stdout.flush()
     sys.stdout.write("Read {nlines:,} lines\n".format(nlines = nlines))
