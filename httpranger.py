@@ -51,11 +51,16 @@ class HttpRanger(io.BufferedIOBase):
         Backed by cached access to remote large file accessible via HTTP GET requests with range.
     """
 
-    def __init__(self, url, cache_size = CACHE_SIZE, adapter = Urllib2Adapter):
-        if hasattr(url, 'head') and hasattr(url, 'range'):
-            self.adapter = url
-        else:
-            self.adapter = adapter(url)
+    def __init__(self, url, cache_size = CACHE_SIZE, adapter = None):
+        if adapter is None:
+            if hasattr(url, 'head') and hasattr(url, 'range'):
+                # url object already has adapter interface, thus assign
+                # identity to adapter factory function
+                adapter = lambda x: x
+            else:
+                # default adapter
+                adapter = Urllib2Adapter
+        self.adapter = adapter(url)
         self.info = self.adapter.head()
         assert re.search(r'\bbytes\b', self.info['Accept-Ranges'])
         self.size = int(self.info['Content-Length'])
